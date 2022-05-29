@@ -1,6 +1,10 @@
+
+const fs = require('fs');
+const generatePage = require('./project/src/page-template.js');
+
 const inquirer = require('inquirer');
 
-const promptUser = ( ) => {
+const promptUser = () => {
   return inquirer.prompt([
     {
       type: 'input',
@@ -51,10 +55,10 @@ const promptUser = ( ) => {
 
 const promptProject = portfolioData => {
 
-// If there's no 'projects' array property, create one
-if (!portfolioData.projects) {
-  portfolioData.projects = [];
-}
+  // If there's no 'projects' array property, create one
+  if (!portfolioData.projects) {
+    portfolioData.projects = [];
+  }
 
   console.log(`
 
@@ -63,19 +67,19 @@ if (!portfolioData.projects) {
   =================
   
   `);
-    return inquirer.prompt([
-      {
-        type: 'input',
-        name: 'name',
-        message: 'What is the name of your project?(Required)',
-        validate: nameInput => {
-          if (nameInput) {
-            return true;
-          } else {
-            console.log('Please enter your name!');
-            return false;
-          }
+  return inquirer.prompt([
+    {
+      type: 'input',
+      name: 'name',
+      message: 'What is the name of your project?(Required)',
+      validate: nameInput => {
+        if (nameInput) {
+          return true;
+        } else {
+          console.log('Please enter your name!');
+          return false;
         }
+      }
     },
     {
       type: 'input',
@@ -121,29 +125,32 @@ if (!portfolioData.projects) {
       message: 'Would you like to enter another project?',
       default: false
     }
-    
+
   ])
 
-  .then(projectData => {
-    portfolioData.projects.push(projectData);
-    if (projectData.confirmAddProject) {
-      return promptProject(portfolioData);
-    } else {
-      return portfolioData;
-    }
-  });
+    .then(projectData => {
+      portfolioData.projects.push(projectData);
+      if (projectData.confirmAddProject) {
+        return promptProject(portfolioData);
+      } else {
+        return portfolioData;
+      }
+    });
 };
 
 promptUser()
   .then(promptProject)
   .then(portfolioData => {
-    console.log(portfolioData);
+    const pageHTML = generatePage(portfolioData);
+
+    fs.writeFile('./index.html', pageHTML, err => {
+      if (err) throw new Error(err);
+
+      console.log('Page created! Check out index.html in this directory to see it!');
+    });
   });
 
 
-
-// const fs = require('fs');
-// const generatePage = require('./src/page-template');
 
 // const pageHTML = generatePage(name, github);
 
