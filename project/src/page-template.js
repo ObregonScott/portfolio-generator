@@ -2,7 +2,7 @@
 // Create the About Section
 const generateAbout = aboutText => {
   if (!aboutText) {
-    return '';
+    return ''; b
   }
 
   return `
